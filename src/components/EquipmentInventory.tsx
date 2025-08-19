@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, Filter, Package, RotateCcw, Edit3, Trash2, MapPin, User, Calendar, Wrench } from 'lucide-react';
+import { Search, Filter, Package, RotateCcw, Edit3, Trash2, MapPin, User, Calendar, Wrench, AlertTriangle, CheckCircle, UserCheck } from 'lucide-react';
 
 interface EquipmentItem {
   id: number;
@@ -145,7 +145,14 @@ const EquipmentInventory: React.FC = () => {
       'available': 'text-green-600'
     };
     
-    return <Package className={`w-4 h-4 ${iconColor[status as keyof typeof iconColor] || 'text-gray-600'}`} />;
+    const icons = {
+      'damaged': <AlertTriangle className={`w-4 h-4 ${iconColor.damaged}`} />,
+      'maint-hold': <Wrench className={`w-4 h-4 ${iconColor['maint-hold']}`} />,
+      'rented': <UserCheck className={`w-4 h-4 ${iconColor.rented}`} />,
+      'available': <CheckCircle className={`w-4 h-4 ${iconColor.available}`} />
+    };
+    
+    return icons[status as keyof typeof icons] || <Package className="w-4 h-4 text-gray-600" />;
   };
 
   const getStatusDisplayName = (status: string) => {
