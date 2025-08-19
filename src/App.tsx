@@ -1,8 +1,8 @@
 import React from 'react';
-import ScheduleManagement from './components/ScheduleManagement';
+import EquipmentInventory from './components/EquipmentInventory';
 
 function App() {
-  return <ScheduleManagement />;
+  return <EquipmentInventory />;
 }
 
 export default App;
