@@ -6,7 +6,7 @@ interface EquipmentItem {
   category: string;
   equipmentName: string;
   equipmentId: string;
-  status: 'damaged' | 'maintenance' | 'hold' | 'rented' | 'available';
+  status: 'damaged' | 'maint-hold' | 'rented' | 'available';
   techManager: string;
   lastUpdated: string;
   location: string;
@@ -23,8 +23,7 @@ const EquipmentInventory: React.FC = () => {
   const [statusFilter, setStatusFilter] = useState('all');
   const [storeFilter, setStoreFilter] = useState('all');
   const [showDamaged, setShowDamaged] = useState(true);
-  const [showMaintenance, setShowMaintenance] = useState(true);
-  const [showHold, setShowHold] = useState(true);
+  const [showMaintHold, setShowMaintHold] = useState(true);
   const [showRented, setShowRented] = useState(true);
   const [showAvailable, setShowAvailable] = useState(true);
 
@@ -76,7 +75,7 @@ const EquipmentInventory: React.FC = () => {
       category: 'chippers',
       equipmentName: 'Bandit 12" Wood Chipper',
       equipmentId: 'BAN-CH-12-003',
-      status: 'maintenance',
+      status: 'maint-hold',
       techManager: 'Mike Johnson',
       lastUpdated: '2024-05-15 11:45 AM',
       location: 'Charlotte Shop',
@@ -109,7 +108,7 @@ const EquipmentInventory: React.FC = () => {
       category: 'excavators',
       equipmentName: 'John Deere 35G Excavator',
       equipmentId: 'JD-35G-001',
-      status: 'hold',
+      status: 'maint-hold',
       techManager: 'Mike Johnson',
       lastUpdated: '2024-05-19 10:20 AM',
       location: 'Charlotte Store',
@@ -131,8 +130,7 @@ const EquipmentInventory: React.FC = () => {
   const getStatusColor = (status: string) => {
     const colors = {
       'damaged': 'bg-red-100 text-red-800',
-      'maintenance': 'bg-yellow-100 text-yellow-800',
-      'hold': 'bg-purple-100 text-purple-800',
+      'maint-hold': 'bg-yellow-100 text-yellow-800',
       'rented': 'bg-blue-100 text-blue-800',
       'available': 'bg-green-100 text-green-800'
     };
@@ -142,13 +140,32 @@ const EquipmentInventory: React.FC = () => {
   const getStatusIcon = (status: string) => {
     const iconColor = {
       'damaged': 'text-red-600',
-      'maintenance': 'text-yellow-600',
-      'hold': 'text-purple-600',
+      'maint-hold': 'text-yellow-600',
       'rented': 'text-blue-600',
       'available': 'text-green-600'
     };
     
     return <Package className={`w-4 h-4 ${iconColor[status as keyof typeof iconColor] || 'text-gray-600'}`} />;
+  };
+
+  const getStatusDisplayName = (status: string) => {
+    const displayNames = {
+      'damaged': 'DAMAGED',
+      'maint-hold': 'MAINT. HOLD',
+      'rented': 'RENTED',
+      'available': 'AVAILABLE'
+    };
+    return displayNames[status as keyof typeof displayNames] || status.toUpperCase();
+  };
+
+  const getStatusSortOrder = (status: string) => {
+    const sortOrder = {
+      'damaged': 1,
+      'maint-hold': 2,
+      'rented': 3,
+      'available': 4
+    };
+    return sortOrder[status as keyof typeof sortOrder] || 5;
   };
 
   const filteredData = equipmentData.filter(item => {
@@ -163,13 +180,19 @@ const EquipmentInventory: React.FC = () => {
     
     const matchesStatusFilter = (
       (showDamaged && item.status === 'damaged') ||
-      (showMaintenance && item.status === 'maintenance') ||
-      (showHold && item.status === 'hold') ||
+      (showMaintHold && item.status === 'maint-hold') ||
       (showRented && item.status === 'rented') ||
       (showAvailable && item.status === 'available')
     );
     
     return matchesSearch && matchesCategory && matchesStatus && matchesStore && matchesStatusFilter;
+  });
+
+  // Sort by status priority: Damaged > Maint. Hold > Rented > Available
+  const sortedData = [...filteredData].sort((a, b) => {
+    const aOrder = getStatusSortOrder(a.status);
+    const bOrder = getStatusSortOrder(b.status);
+    return aOrder - bOrder;
   });
 
   const handleEditEquipment = (equipmentId: number) => {
@@ -250,9 +273,8 @@ const EquipmentInventory: React.FC = () => {
               <option value="all">All Status</option>
               <option value="available">Available</option>
               <option value="rented">Rented</option>
-              <option value="maintenance">Maintenance</option>
+              <option value="maint-hold">Maint. Hold</option>
               <option value="damaged">Damaged</option>
-              <option value="hold">Hold</option>
             </select>
 
             <select
@@ -305,17 +327,17 @@ const EquipmentInventory: React.FC = () => {
                 <div className="flex items-center space-x-4">
                   <div className="flex items-center space-x-1">
                     <Wrench className="w-4 h-4 text-yellow-600" />
-                    <span className="text-sm font-semibold text-gray-700">Maintenance & Issues</span>
+                    <span className="text-sm font-semibold text-gray-700">Issues & Maintenance</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <label className="flex items-center space-x-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={showMaintenance}
-                        onChange={(e) => setShowMaintenance(e.target.checked)}
+                        checked={showMaintHold}
+                        onChange={(e) => setShowMaintHold(e.target.checked)}
                         className="w-4 h-4 text-yellow-600 bg-gray-100 border-gray-300 rounded focus:ring-yellow-500 focus:ring-2"
                       />
-                      <span className="text-sm text-gray-700 font-medium">Maintenance</span>
+                      <span className="text-sm text-gray-700 font-medium">Maint. Hold</span>
                     </label>
                     <label className="flex items-center space-x-2 cursor-pointer">
                       <input
@@ -325,15 +347,6 @@ const EquipmentInventory: React.FC = () => {
                         className="w-4 h-4 text-red-600 bg-gray-100 border-gray-300 rounded focus:ring-red-500 focus:ring-2"
                       />
                       <span className="text-sm text-gray-700 font-medium">Damaged</span>
-                    </label>
-                    <label className="flex items-center space-x-2 cursor-pointer">
-                      <input
-                        type="checkbox"
-                        checked={showHold}
-                        onChange={(e) => setShowHold(e.target.checked)}
-                        className="w-4 h-4 text-purple-600 bg-gray-100 border-gray-300 rounded focus:ring-purple-500 focus:ring-2"
-                      />
-                      <span className="text-sm text-gray-700 font-medium">Hold</span>
                     </label>
                   </div>
                 </div>
@@ -382,7 +395,7 @@ const EquipmentInventory: React.FC = () => {
                 </tr>
               </thead>
               <tbody className="bg-white divide-y divide-gray-200">
-                {filteredData.map((item, index) => (
+                {sortedData.map((item, index) => (
                   <tr key={item.id} className={`hover:bg-gray-50 ${index % 2 === 0 ? 'bg-white' : 'bg-gray-50'}`}>
                     <td className="px-3 py-3">
                       <div className="text-sm font-medium text-gray-900 capitalize">
@@ -406,7 +419,7 @@ const EquipmentInventory: React.FC = () => {
                       <div className="flex items-center space-x-2">
                         {getStatusIcon(item.status)}
                         <span className={`inline-flex px-2 py-1 text-xs font-medium rounded-full ${getStatusColor(item.status)}`}>
-                          {item.status.toUpperCase()}
+                          {getStatusDisplayName(item.status)}
                         </span>
                       </div>
                     </td>
@@ -503,7 +516,7 @@ const EquipmentInventory: React.FC = () => {
               <div>
                 <p className="text-sm text-gray-700">
                   Show from <span className="font-medium">1</span> to <span className="font-medium">10</span> of{' '}
-                  <span className="font-medium">{filteredData.length}</span> records
+                  <span className="font-medium">{sortedData.length}</span> records
                 </p>
               </div>
               <div>
