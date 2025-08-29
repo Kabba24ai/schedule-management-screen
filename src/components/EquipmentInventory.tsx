@@ -1,21 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, Package, RotateCcw, Edit3, Trash2, MapPin, User, Calendar, Wrench, AlertTriangle, CheckCircle, UserCheck } from 'lucide-react';
-
-interface EquipmentItem {
-  id: number;
-  category: string;
-  equipmentName: string;
-  equipmentId: string;
-  status: 'damaged' | 'maint-hold' | 'rented' | 'available';
-  techManager: string;
-  lastUpdated: string;
-  location: string;
-  customerName?: string;
-  orderId?: number;
-  deliveryDate?: string;
-  returnDate?: string;
-  store: 'Charlotte' | 'Bon Aqua';
-}
+import { EquipmentItem } from '../types';
 
 const EquipmentInventory: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');

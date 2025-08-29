@@ -1,27 +1,6 @@
 import React, { useState } from 'react';
 import { Search, Filter, Calendar, RotateCcw, Edit3, Trash2, MapPin, Phone, Truck, Store } from 'lucide-react';
-
-interface ScheduleItem {
-  id: number;
-  productName: string;
-  customer: string;
-  phone: string;
-  deliveryAddress: string;
-  store: string;
-  isRescheduled: boolean;
-  category: string;
-  deliveryDate: string;
-  deliveryTime: string;
-  returnDate: string;
-  returnTime: string;
-  machineId: string;
-  machineName: string;
-  deliveryStatus: 'pending' | 'completed';
-  returnStatus: 'pending' | 'completed';
-  deliveryMode: 'truck' | 'store';
-  returnMode: 'truck' | 'store';
-  paymentStatus: 'pending' | 'paid';
-}
+import { ScheduleItem } from '../types';
 
 const ScheduleManagement: React.FC = () => {
   const [searchTerm, setSearchTerm] = useState('');

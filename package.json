@@ -1,7 +1,10 @@
 {
-  "name": "vite-react-typescript-starter",
+  "name": "kabba-2-rental-management",
   "private": true,
-  "version": "0.0.0",
+  "version": "1.0.0",
+  "description": "Equipment inventory and schedule management system for Kabba 2 Rental",
+  "author": "Kabba 2 Rental Development Team",
+  "keywords": ["rental", "equipment", "inventory", "schedule", "management"],
   "type": "module",
   "scripts": {
     "dev": "vite",
